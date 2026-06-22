@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Check, Clock, Dumbbell, ExternalLink, Play, RefreshCw, Star } from 'lucide-react'
+import { Check, Clock, Dumbbell, Play, RefreshCw, Star } from 'lucide-react'
 import DashboardLayout from '../../../layouts/DashboardLayout'
 import ConfirmDialog from '../../../components/ConfirmDialog'
 import { useAuth } from '../../../hooks'
@@ -551,8 +551,14 @@ export default function TreinosAlunoPage() {
                         >
                           <div className="flex gap-4 items-start">
                             {/* Media thumbnail on the left if present */}
-                            {item.exercicio?.arquivoDemonstracao && (
-                              <div className="w-24 sm:w-32 aspect-video bg-[#0d100e] rounded-xl relative overflow-hidden shrink-0 group">
+                            {item.exercicio?.arquivoDemonstracao ? (
+                              <a
+                                href={item.exercicio.arquivoDemonstracao}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="w-24 sm:w-32 aspect-video bg-[#0d100e] rounded-xl relative overflow-hidden shrink-0 group cursor-pointer block"
+                                title="Ver demonstração"
+                              >
                                 {isDirectImage(item.exercicio.arquivoDemonstracao) ? (
                                   <img
                                     src={item.exercicio.arquivoDemonstracao}
@@ -588,25 +594,14 @@ export default function TreinosAlunoPage() {
 
                                 {/* Play icon overlay for videos */}
                                 {(isYoutube(item.exercicio.arquivoDemonstracao) || isDirectVideo(item.exercicio.arquivoDemonstracao)) && (
-                                  <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/30 transition-colors pointer-events-none">
+                                  <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/30 transition-colors">
                                     <div className="w-8 h-8 rounded-full bg-[#94e400] text-black flex items-center justify-center shadow-md transform group-hover:scale-110 transition-transform duration-300">
                                       <Play size={12} fill="black" className="ml-0.5" />
                                     </div>
                                   </div>
                                 )}
-
-                                {/* External Link to open demo */}
-                                <a
-                                  href={item.exercicio.arquivoDemonstracao}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center z-10"
-                                  title="Abrir demonstração"
-                                >
-                                  <ExternalLink size={10} />
-                                </a>
-                              </div>
-                            )}
+                              </a>
+                            ) : null}
 
                             {/* Details on the right */}
                             <div className="flex-1 min-w-0">
