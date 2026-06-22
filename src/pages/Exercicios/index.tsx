@@ -5,6 +5,7 @@ import {
   Dumbbell,
   ExternalLink,
   Heart,
+  Play,
   Plus,
   Search,
   Star,
@@ -13,7 +14,13 @@ import {
 import DashboardLayout from '../../layouts/DashboardLayout'
 import { useAuth } from '../../hooks'
 import { exerciciosService } from '../../services/exercicios.service'
-import { extractError } from '../../utils'
+import {
+  extractError,
+  isYoutube,
+  isDirectVideo,
+  isDirectImage,
+  obterThumbVideo,
+} from '../../utils'
 import type { ExercicioDto, RegistrarExercicioPayload } from '../../types'
 
 // Categorias visíveis no Figma como filtros pílula. A última (Mais) revela o restante.
@@ -291,9 +298,8 @@ export default function ExerciciosPage() {
                     className="bg-[#1c1f1d] border border-white/5 rounded-2xl overflow-hidden flex flex-col"
                   >
                     {/* Imagem ou placeholder */}
-                    <div className="aspect-video bg-[#0d100e] flex items-center justify-center relative overflow-hidden">
-                      {ex.arquivoDemonstracao &&
-                      /\.(png|jpe?g|gif|webp|avif)$/i.test(ex.arquivoDemonstracao) ? (
+                    <div className="aspect-video bg-[#0d100e] flex items-center justify-center relative overflow-hidden group">
+                      {ex.arquivoDemonstracao && isDirectImage(ex.arquivoDemonstracao) ? (
                         <img
                           src={ex.arquivoDemonstracao}
                           alt={ex.nome}
@@ -302,15 +308,47 @@ export default function ExerciciosPage() {
                             ;(e.target as HTMLImageElement).style.display = 'none'
                           }}
                         />
+                      ) : ex.arquivoDemonstracao && isYoutube(ex.arquivoDemonstracao) ? (
+                        <img
+                          src={obterThumbVideo(ex.arquivoDemonstracao) || ''}
+                          alt={ex.nome}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            ;(e.target as HTMLImageElement).style.display = 'none'
+                          }}
+                        />
+                      ) : ex.arquivoDemonstracao && isDirectVideo(ex.arquivoDemonstracao) ? (
+                        <video
+                          src={ex.arquivoDemonstracao}
+                          className="w-full h-full object-cover"
+                          preload="metadata"
+                          muted
+                          playsInline
+                          onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.pause()
+                            e.currentTarget.currentTime = 0
+                          }}
+                        />
                       ) : (
                         <Dumbbell size={40} className="text-[#94e400]/40" />
                       )}
+
+                      {/* Video overlay / Play icon */}
+                      {ex.arquivoDemonstracao && (isYoutube(ex.arquivoDemonstracao) || isDirectVideo(ex.arquivoDemonstracao)) && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/30 transition-colors pointer-events-none">
+                          <div className="w-10 h-10 rounded-full bg-[#94e400] text-black flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+                            <Play size={16} fill="black" className="ml-0.5" />
+                          </div>
+                        </div>
+                      )}
+
                       {ex.arquivoDemonstracao && (
                         <a
                           href={ex.arquivoDemonstracao}
                           target="_blank"
                           rel="noreferrer"
-                          className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center"
+                          className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center z-10"
                           title="Abrir demonstração"
                         >
                           <ExternalLink size={14} />

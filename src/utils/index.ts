@@ -52,3 +52,30 @@ export function extractError(err: unknown): string {
   const firstFieldError = errors ? Object.values(errors).flat()[0] : undefined
   return detail || firstFieldError || ''
 }
+
+export const isYoutube = (url?: string): boolean => {
+  if (!url) return false
+  const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/i
+  return ytRegex.test(url)
+}
+
+export const isDirectVideo = (url?: string): boolean => {
+  if (!url) return false
+  return /\.(mp4|webm|ogg|mov)$/i.test(url)
+}
+
+export const isDirectImage = (url?: string): boolean => {
+  if (!url) return false
+  return /\.(png|jpe?g|gif|webp|avif)$/i.test(url)
+}
+
+export function obterThumbVideo(url?: string): string | null {
+  if (!url) return null
+  const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/i
+  const match = url.match(ytRegex)
+  if (match && match[1]) {
+    return `https://img.youtube.com/vi/${match[1]}/mqdefault.jpg`
+  }
+  return null
+}
+

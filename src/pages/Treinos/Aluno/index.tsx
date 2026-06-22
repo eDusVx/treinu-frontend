@@ -1,11 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Check, Clock, Dumbbell, Play, RefreshCw, Star } from 'lucide-react'
+import { Check, Clock, Dumbbell, ExternalLink, Play, RefreshCw, Star } from 'lucide-react'
 import DashboardLayout from '../../../layouts/DashboardLayout'
 import ConfirmDialog from '../../../components/ConfirmDialog'
 import { useAuth } from '../../../hooks'
 import { treinosService } from '../../../services/treinos.service'
 import { execucaoTreinoService } from '../../../services/execucaoTreino.service'
-import { extractError, formatarDataPtBr } from '../../../utils'
+import {
+  extractError,
+  formatarDataPtBr,
+  isYoutube,
+  isDirectVideo,
+  isDirectImage,
+  obterThumbVideo,
+} from '../../../utils'
 import type {
   ExecucaoTreinoDto,
   ItemTreinoDto,
@@ -542,21 +549,84 @@ export default function TreinosAlunoPage() {
                             feito ? 'border-[#94e400]/50' : 'border-white/5'
                           }`}
                         >
-                          <div className="flex items-center justify-between">
-                            <span className="text-white font-semibold">
-                              #{item.ordem} — {item.exercicio?.nome ?? 'Exercício'}
-                            </span>
-                            <span className="text-[#94e400] font-bold text-sm">
-                              {item.series}x{item.repeticoes}
-                            </span>
+                          <div className="flex gap-4 items-start">
+                            {/* Media thumbnail on the left if present */}
+                            {item.exercicio?.arquivoDemonstracao && (
+                              <div className="w-24 sm:w-32 aspect-video bg-[#0d100e] rounded-xl relative overflow-hidden shrink-0 group">
+                                {isDirectImage(item.exercicio.arquivoDemonstracao) ? (
+                                  <img
+                                    src={item.exercicio.arquivoDemonstracao}
+                                    alt={item.exercicio.nome}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      ;(e.target as HTMLImageElement).style.display = 'none'
+                                    }}
+                                  />
+                                ) : isYoutube(item.exercicio.arquivoDemonstracao) ? (
+                                  <img
+                                    src={obterThumbVideo(item.exercicio.arquivoDemonstracao) || ''}
+                                    alt={item.exercicio.nome}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      ;(e.target as HTMLImageElement).style.display = 'none'
+                                    }}
+                                  />
+                                ) : isDirectVideo(item.exercicio.arquivoDemonstracao) ? (
+                                  <video
+                                    src={item.exercicio.arquivoDemonstracao}
+                                    className="w-full h-full object-cover"
+                                    preload="metadata"
+                                    muted
+                                    playsInline
+                                    onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.pause()
+                                      e.currentTarget.currentTime = 0
+                                    }}
+                                  />
+                                ) : null}
+
+                                {/* Play icon overlay for videos */}
+                                {(isYoutube(item.exercicio.arquivoDemonstracao) || isDirectVideo(item.exercicio.arquivoDemonstracao)) && (
+                                  <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/30 transition-colors pointer-events-none">
+                                    <div className="w-8 h-8 rounded-full bg-[#94e400] text-black flex items-center justify-center shadow-md transform group-hover:scale-110 transition-transform duration-300">
+                                      <Play size={12} fill="black" className="ml-0.5" />
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* External Link to open demo */}
+                                <a
+                                  href={item.exercicio.arquivoDemonstracao}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center z-10"
+                                  title="Abrir demonstração"
+                                >
+                                  <ExternalLink size={10} />
+                                </a>
+                              </div>
+                            )}
+
+                            {/* Details on the right */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-2 flex-wrap">
+                                <span className="text-white font-semibold text-sm sm:text-base truncate">
+                                  #{item.ordem} — {item.exercicio?.nome ?? 'Exercício'}
+                                </span>
+                                <span className="text-[#94e400] font-bold text-sm shrink-0">
+                                  {item.series}x{item.repeticoes}
+                                </span>
+                              </div>
+                              <div className="flex gap-4 text-white/60 text-xs mt-2">
+                                <span>Carga: {item.carga}</span>
+                                <span>Pausa: {item.pausa}</span>
+                              </div>
+                              {item.observacoes && (
+                                <p className="text-white/50 text-xs mt-2 italic">{item.observacoes}</p>
+                              )}
+                            </div>
                           </div>
-                          <div className="flex gap-4 text-white/60 text-xs mt-2">
-                            <span>Carga: {item.carga}</span>
-                            <span>Pausa: {item.pausa}</span>
-                          </div>
-                          {item.observacoes && (
-                            <p className="text-white/50 text-xs mt-2 italic">{item.observacoes}</p>
-                          )}
 
                           {execucaoId && (
                             <div className="mt-3 pt-3 border-t border-white/5">
