@@ -1,0 +1,1 @@
+import{t as e}from"./api-lIgFR67D.js";var t={aprovarTreinador:t=>e.patch(`/api/admin/treinador/${t}/approve`).then(e=>e.data),metricasPlataforma:(t,n)=>{let r=new URLSearchParams({dataInicio:t,dataFim:n}).toString();return e.get(`/api/admin/metricas-plataforma?${r}`).then(e=>e.data)}};export{t};

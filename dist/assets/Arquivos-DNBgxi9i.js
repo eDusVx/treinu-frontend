@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-DYI575Mz.js";import{m as t,t as n}from"./DashboardLayout-iZzTqMB2.js";import{t as r}from"./PlaceholderCard-wPx1SKT-.js";var i=e();function a(){return(0,i.jsx)(n,{children:(0,i.jsx)(r,{icon:t,titulo:`Arquivos`,descricao:`Em breve: PDFs do treino, fotos de avaliação física e documentos compartilhados pelo seu treinador.`})})}export{a as default};

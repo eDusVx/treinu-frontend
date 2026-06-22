@@ -1,0 +1,1 @@
+import{t as e}from"./api-lIgFR67D.js";var t=`/api/v1/plataforma`,n={enviarSugestao:n=>e.post(`${t}/sugestoes`,n).then(e=>e.data),registrarAvaliacao:n=>e.post(`${t}/avaliacoes`,n).then(e=>e.data),obterRanking:n=>e.get(`${t}/ranking`,{params:n?{treinadorId:n}:void 0}).then(e=>e.data)};export{n as t};

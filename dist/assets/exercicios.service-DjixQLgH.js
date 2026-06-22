@@ -1,0 +1,1 @@
+import{t as e}from"./api-lIgFR67D.js";var t={registrar:t=>e.post(`/api/exercicios`,t).then(e=>e.data),listar:(t,n)=>e.get(`/api/exercicios`,{params:{treinadorId:t,...n?{tags:n}:{}}}).then(e=>e.data)};export{t};

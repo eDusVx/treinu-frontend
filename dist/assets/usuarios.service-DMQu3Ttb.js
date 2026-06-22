@@ -1,0 +1,1 @@
+import{t as e}from"./api-lIgFR67D.js";var t={listar:(t,n=1,r=10)=>e.get(`/api/usuarios`,{params:{tipoUsuario:t,page:n,limit:r}}).then(e=>e.data),listarCompleto:(t,n=1,r=10)=>e.get(`/api/usuarios`,{params:{tipoUsuario:t,page:n,limit:r}}).then(e=>e.data),configurarNotificacoes:(t,n)=>e.put(`/api/usuarios/${t}/notification-settings`,n).then(e=>e.data)};export{t};
